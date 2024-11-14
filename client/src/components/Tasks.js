@@ -53,9 +53,16 @@ const Tasks = () => {
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesPriority = priorityFilter === 'All' || task.priority === priorityFilter;
+    
+    const today = new Date().toISOString().split("T")[0];
+    const isOverdue = !task.completed && task.dueDate && task.dueDate < today;
+  
     const matchesCompletion =
-      completionFilter === 'All' || (completionFilter === 'Completed' ? task.completed : !task.completed);
-
+      completionFilter === 'All' ||
+      (completionFilter === 'Completed' && task.completed) ||
+      (completionFilter === 'Pending' && !task.completed && !isOverdue) ||
+      (completionFilter === 'Overdue' && isOverdue);
+  
     return matchesSearch && matchesPriority && matchesCompletion;
   });
 
@@ -78,12 +85,16 @@ const Tasks = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-4">
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4 sm:w-auto w-full"
-        >
-          Add Task
-        </button>
+      <button
+        onClick={() => {
+          setShowModal(true);
+          setTaskToEdit(null); // Clear taskToEdit to ensure the form is empty
+        }}
+        className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4 sm:w-auto w-full"
+      >
+  Add Task
+</button>
+
 
         <div className="flex space-x-4 w-full sm:w-auto sm:flex-row flex-col">
           <input
@@ -113,6 +124,7 @@ const Tasks = () => {
             <option value="All">All Statuses</option>
             <option value="Completed">Completed</option>
             <option value="Pending">Pending</option>
+            <option value="Overdue">Overdue</option>
           </select>
 
           <select

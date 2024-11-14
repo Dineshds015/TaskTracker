@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
-  const navigate = useNavigate();  // Initialize navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -13,24 +13,21 @@ const Dashboard = () => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  // Overdue Tasks
   const overdueTasks = tasks.filter(
-    task => !task.completed && task.dueDate && task.dueDate < today
+    task => !task.completed && task.dueDate && task.dueDate <= today
   );
 
-  // Upcoming Tasks
   const upcomingTasks = tasks.filter(
     task => !task.completed && task.dueDate && task.dueDate >= today
   ).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
-  // Completed Tasks
   const completedTasksList = tasks.filter(
     task => task.completed
   ).sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
 
-  const topOverdueTasks = overdueTasks.slice(0, 3);
-  const topUpcomingTasks = upcomingTasks.slice(0, 3);
-  const topCompletedTasks = completedTasksList.slice(0, 3);
+  const topOverdueTasks = overdueTasks;
+  const topUpcomingTasks = upcomingTasks;
+  const topCompletedTasks = completedTasksList;
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -40,9 +37,8 @@ const Dashboard = () => {
     setSelectedTask(null);
   };
 
-  // Handle Manage Task Button Click with redirection
   const handleManageTasks = () => {
-    navigate('/tasks');  // Redirect to /tasks page
+    navigate('/tasks');
   };
 
   return (
@@ -56,76 +52,75 @@ const Dashboard = () => {
       </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-  {/* Top 3 Upcoming Tasks */}
-  <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
-    <div className="flex items-center mb-4">
-      <span className="text-3xl text-blue-500 mr-3"><i className="fas fa-calendar-alt"></i></span>
-      <h3 className="text-2xl font-semibold text-blue-500">Top 3 Upcoming Tasks</h3>
-    </div>
-    <ul className="space-y-4">
-      {topUpcomingTasks.map((task) => (
-        <li
-          key={task.id}
-          className="cursor-pointer text-lg font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-300 flex justify-between items-center"
-          onClick={() => handleTaskClick(task)}
-        >
-          <div>
-            <strong>{task.title}</strong>
-            <p className="text-sm text-gray-500">Due: {task.dueDate}</p>
-          </div>
-          <span className="bg-blue-100 text-blue-600 py-1 px-3 text-xs rounded-full">Upcoming</span>
-        </li>
-      ))}
-    </ul>
+        {/* Top 3 Upcoming Tasks */}
+<div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 h-64 overflow-y-auto">
+  <div className="sticky top-0 bg-white z-10 flex items-center mb-4 p-4 shadow-md">
+    <span className="text-3xl text-blue-500 mr-3"><i className="fas fa-calendar-alt"></i></span>
+    <h3 className="text-2xl font-semibold text-blue-500">Upcoming Tasks</h3>
   </div>
-
-  {/* Top 3 Overdue Tasks */}
-  <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
-    <div className="flex items-center mb-4">
-      <span className="text-3xl text-red-500 mr-3"><i className="fas fa-exclamation-triangle"></i></span>
-      <h3 className="text-2xl font-semibold text-red-500">Top 3 Overdue Tasks</h3>
-    </div>
-    <ul className="space-y-4">
-      {topOverdueTasks.map((task) => (
-        <li
-          key={task.id}
-          className="cursor-pointer text-lg font-medium text-red-600 hover:text-red-800 hover:underline transition-colors duration-300 flex justify-between items-center"
-          onClick={() => handleTaskClick(task)}
-        >
-          <div>
-            <strong>{task.title}</strong>
-            <p className="text-sm text-gray-500">Due: {task.dueDate}</p>
-          </div>
-          <span className="bg-red-100 text-red-600 py-1 px-3 text-xs rounded-full">Overdue</span>
-        </li>
-      ))}
-    </ul>
-  </div>
-
-  {/* Top 3 Completed Tasks */}
-  <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
-    <div className="flex items-center mb-4">
-      <span className="text-3xl text-green-500 mr-3"><i className="fas fa-check-circle"></i></span>
-      <h3 className="text-2xl font-semibold text-green-500">Top 3 Completed Tasks</h3>
-    </div>
-    <ul className="space-y-4">
-      {topCompletedTasks.map((task) => (
-        <li
-          key={task.id}
-          className="cursor-pointer text-lg font-medium text-green-600 hover:text-green-800 hover:underline transition-colors duration-300 flex justify-between items-center"
-          onClick={() => handleTaskClick(task)}
-        >
-          <div>
-            <strong>{task.title}</strong>
-            <p className="text-sm text-gray-500">Completed on: {task.dueDate}</p>
-          </div>
-          <span className="bg-green-100 text-green-600 py-1 px-3 text-xs rounded-full">Completed</span>
-        </li>
-      ))}
-    </ul>
-  </div>
+  <ul className="space-y-4">
+    {topUpcomingTasks.map((task) => (
+      <li
+        key={task.id}
+        className="cursor-pointer text-lg font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-300 flex justify-between items-center"
+        onClick={() => handleTaskClick(task)}
+      >
+        <div>
+          <strong>{task.title}</strong>
+          <p className="text-sm text-gray-500">Due: {task.dueDate}</p>
+        </div>
+        <span className="bg-blue-100 text-blue-600 py-1 px-3 text-xs rounded-full">Upcoming</span>
+      </li>
+    ))}
+  </ul>
 </div>
 
+{/* Top 3 Overdue Tasks */}
+<div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 h-64 overflow-y-auto">
+  <div className="sticky top-0 bg-white z-10 flex items-center mb-4 p-4 shadow-md">
+    <span className="text-3xl text-red-500 mr-3"><i className="fas fa-exclamation-triangle"></i></span>
+    <h3 className="text-2xl font-semibold text-red-500">Overdue Tasks</h3>
+  </div>
+  <ul className="space-y-4">
+    {topOverdueTasks.map((task) => (
+      <li
+        key={task.id}
+        className="cursor-pointer text-lg font-medium text-red-600 hover:text-red-800 hover:underline transition-colors duration-300 flex justify-between items-center"
+        onClick={() => handleTaskClick(task)}
+      >
+        <div>
+          <strong>{task.title}</strong>
+          <p className="text-sm text-gray-500">Due: {task.dueDate}</p>
+        </div>
+        <span className="bg-red-100 text-red-600 py-1 px-3 text-xs rounded-full">Overdue</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+{/* Top 3 Completed Tasks */}
+<div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 h-64 overflow-y-auto">
+  <div className="sticky top-0 bg-white z-10 flex items-center mb-4 p-4 shadow-md">
+    <span className="text-3xl text-green-500 mr-3"><i className="fas fa-check-circle"></i></span>
+    <h3 className="text-2xl font-semibold text-green-500">Completed Tasks</h3>
+  </div>
+  <ul className="space-y-4">
+    {topCompletedTasks.map((task) => (
+      <li
+        key={task.id}
+        className="cursor-pointer text-lg font-medium text-green-600 hover:text-green-800 hover:underline transition-colors duration-300 flex justify-between items-center"
+        onClick={() => handleTaskClick(task)}
+      >
+        <div>
+          <strong>{task.title}</strong>
+          <p className="text-sm text-gray-500">Completed on: {task.dueDate}</p>
+        </div>
+        <span className="bg-green-100 text-green-600 py-1 px-3 text-xs rounded-full">Completed</span>
+      </li>
+    ))}
+  </ul>
+</div>
+</div>
 
       {/* Task Detail Modal */}
       {selectedTask && (
@@ -150,6 +145,7 @@ const Dashboard = () => {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {/* Individual Statistic Cards */}
         <div className="bg-blue-100 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
           <h3 className="text-xl font-semibold text-blue-700 mb-4">Total Tasks</h3>
           <p className="text-4xl font-bold">{tasks.length}</p>
